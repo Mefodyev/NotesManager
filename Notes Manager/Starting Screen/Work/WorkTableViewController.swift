@@ -7,87 +7,89 @@
 //
 
 import UIKit
+import RealmSwift
 
 class WorkTableViewController: UITableViewController {
 
-    var workItems: [String] = []
+    var workTasks: Results<WorkTask>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        workItems.append("First Work Task")
-        workItems.append("Second Work Task")
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
+        workTasks = realm.objects(WorkTask.self)
 
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+
     }
 
-    // MARK: - Table view data source
-
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        // #warning Incomplete implementation, return the number of sections
-//        return workItems.count
-//    }
+    // MARK: - Table view data source, delegate
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return workItems.count
+        return workTasks.isEmpty ? 0 : workTasks.count
     }
 
    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "WorkCell", for: indexPath)
-        cell.textLabel?.text = workItems[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WorkCell", for: indexPath as IndexPath) as! WorkTableViewCell
+        
+        let tasks = workTasks[indexPath.row]
+        cell.taskNameLabel.text = tasks.name
+        let dateString = (tasks.taskDate)?.toString(dateFormat: "dd MM yyyy HH:mm")
+        cell.startDateLabel.text = dateString
+        cell.workTaskImage.image = UIImage(data: tasks.imageData!)
+        
+        cell.workTaskImage.layer.cornerRadius = cell.workTaskImage.frame.size.height/2
+        cell.workTaskImage.clipsToBounds = true
 
         return cell
     }
+    
+    //deleting a row from tableView
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let workTask = workTasks[indexPath.row]
+        let contextItem = UIContextualAction(style: .destructive, title: "Delete") {  (contextualAction, view, boolValue) in
+            
+            StorageManager.deleteWorkObject(workTask)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            
+        }
+        
+        let swipeActions = UISwipeActionsConfiguration(actions: [contextItem])
+        
+        return swipeActions
+    }
    
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    @IBAction func unwindSegue(_ segue: UIStoryboardSegue) {
+        
+        guard let newVC = segue.source as? AddNewTaskToWorkViewController else { return }
+        
+        newVC.saveWorkTask()
+        tableView.reloadData()
+        
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+    
+    @IBAction func cancelAction(_ segue: UIStoryboardSegue) {
     }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        if segue.identifier == "showDetailsOfTask" {
+            guard let indexPath = tableView.indexPathForSelectedRow else { return }
+            let workTask = workTasks[indexPath.row]
+            let newWorkTaskVC = segue.destination as! AddNewTaskToWorkViewController
+            newWorkTaskVC.currentTask = workTask
+        }
     }
-    */
 
 }
+
+extension Date {
+    
+    func toString( dateFormat format  : String ) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.string(from: self)
+    }
+}
+
+
+//<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>

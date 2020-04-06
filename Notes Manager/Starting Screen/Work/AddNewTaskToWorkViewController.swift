@@ -7,27 +7,60 @@
 //
 
 import UIKit
+import RealmSwift
 
 class AddNewTaskToWorkViewController: UIViewController {
-   
+    
+    var imageIsChanged = false
+    var currentTask: WorkTask?
+    
     
     @IBOutlet weak var workTaskImage: UIImageView!
     @IBOutlet weak var chooseAnImageButton: UIButton!
     @IBOutlet weak var taskNameTextField: UITextField!
-    @IBOutlet weak var taskBeginDateTextField: UITextField!
     
-    @IBOutlet weak var taskDeadlineDateTextField: UITextField!
     @IBOutlet weak var taskDescriptionTextView: UITextView!
+    
+    
+    @IBOutlet weak var linkedToTimeLabel: UILabel!
+    @IBOutlet weak var linkedToTimeSwitcher: UISwitch!
+    
+    
+    @IBOutlet weak var remindersView: UIView!
+    @IBOutlet weak var datePicker: UIDatePicker!
+    @IBOutlet weak var reminderStackView: UIStackView!
+    
+    @IBOutlet weak var cancelButton: UIBarButtonItem!
+    @IBOutlet weak var addToDatabaseButton: UIBarButtonItem!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         chooseAnImageButton.titleLabel?.lineBreakMode = .byWordWrapping
-//        guard let chooseAnImageButton = chooseAnImageButton else { return }
-//        NSLayoutConstraint(item: chooseAnImageButton, attribute: .centerX, relatedBy: .equal, toItem: workTaskImage, attribute: .width, multiplier: 1, constant: 0).isActive = true
+        remindersView.alpha = 0
+        
+        addToDatabaseButton.isEnabled = false
+        taskNameTextField.addTarget(self, action: #selector(tfChanged), for: .editingChanged)
+        setupEditScreen()
         
     }
+    
+    
+    @IBAction func timeLinkedSwitcherTapped(_ sender: UISwitch) {
+        
+        if linkedToTimeSwitcher.isOn == false {
+            UIView.animate(withDuration: 0.3) {
+                self.remindersView.alpha = 0
+            }
+        } else {
+            UIView.animate(withDuration: 0.3) {
+                self.remindersView.alpha = 1
+            }
+        }
+    }
+    
+    
     
     @IBAction func chooseAnImageButtonIsTouchedDown(_ sender: Any) {
         showImageChooserActionSheet()
@@ -35,34 +68,66 @@ class AddNewTaskToWorkViewController: UIViewController {
     
     
     
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        1
-//    }
-//
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "NewWorkItem", for: indexPath) as! NewWorkItemTableViewCell
-//
-//
-//        return cell
-//    }
-//
-//
-//
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    func saveWorkTask() {
+        
+        var image: UIImage?
+        
+        if imageIsChanged {
+            image = workTaskImage.image
+        } else {
+            image = #imageLiteral(resourceName: "list")
+        }
+        
+        let imageData = image?.pngData()
+        
+        
+        let newWorkTask = WorkTask(name: taskNameTextField.text ?? "", taskDescription: taskDescriptionTextView.text, taskDate: datePicker.date, imageData: imageData)
+        
+        //если мы редактируем уже сохраненную запись
+        if currentTask != nil {
+            try! realm.write {
+                currentTask?.name = newWorkTask.name
+                currentTask?.taskDescription = newWorkTask.description
+                currentTask?.taskDate = newWorkTask.taskDate
+                currentTask?.imageData = newWorkTask.imageData
+            }
+        } else {
+            //если мы сохраняем новую запись
+            StorageManager.saveWorkObject(newWorkTask)
+            print("WorkTask saved via StorageManager saving function")
+            
+        }
     }
-    */
-
+    
+        
+    
+    
+    //метод, позволяющий передать в редактируемую ячейку данные, введенные в конкретную задачу ранее
+    private func setupEditScreen() {
+        if currentTask != nil {
+            setupNavigationBar()
+            imageIsChanged = true
+            guard let data = currentTask?.imageData, let image = UIImage(data: data) else { return }
+            
+            workTaskImage.image = image
+            workTaskImage.contentMode = .scaleAspectFill
+            taskNameTextField.text = currentTask?.name
+            taskDescriptionTextView.text = currentTask?.taskDescription
+            datePicker.date = currentTask?.taskDate as! Date
+        }
+    }
+    
+    private func setupNavigationBar() {
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.title = currentTask?.name
+        navigationItem.rightBarButtonItem?.isEnabled = true
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+    }
 }
 
 
-extension AddNewTaskToWorkViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension AddNewTaskToWorkViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate {
     
     func showImageChooserActionSheet() {
         
@@ -113,4 +178,55 @@ extension AddNewTaskToWorkViewController : UIImagePickerControllerDelegate, UINa
         dismiss(animated: true, completion: nil)
         
     }
+    
+    @objc private func tfChanged() {
+        
+        if taskNameTextField.text?.isEmpty == true {
+            addToDatabaseButton.isEnabled = false
+        } else {
+            addToDatabaseButton.isEnabled = true
+        }
+    }
+    
+    //скрываем клавиатуру по нажатию на дан
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
+    }
 }
+
+
+//Неудавшиеся попытки спрятать киборд
+//добавить во вьюдидлоад
+//func registerForKeyboardNotifications() {
+//    NotificationCenter.default.addObserver(self, selector: #selector(kbWillShow), name: UIWindow.keyboardWillShowNotification, object: nil)
+//    NotificationCenter.default.addObserver(self, selector: #selector(kbWillHide), name: UIWindow.keyboardWillHideNotification, object: nil)
+//}
+//
+//func removeKeyboardNotifications() {
+//    NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillShowNotification, object: nil)
+//    NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillHideNotification, object: nil)
+//}
+//
+//@objc func kbWillShow(_ notification: Notification) {
+//    let userInfo = notification.userInfo
+//    let kbFrameSize = (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+//    scrollView.contentOffset = CGPoint(x: 0, y: kbFrameSize.height)
+//
+//}
+//
+//@objc func kbWillHide() {
+//    scrollView.contentOffset = CGPoint.zero
+//}
+//
+//deinit {
+//    removeKeyboardNotifications()
+//}
