@@ -11,13 +11,15 @@ import RealmSwift
 
 class AddNewTaskToWorkViewController: UIViewController {
     
-    var imageIsChanged = false
+    var imageIsChanged = true
     var currentTask: WorkTask?
     
     
     @IBOutlet weak var workTaskImage: UIImageView!
     @IBOutlet weak var chooseAnImageButton: UIButton!
     @IBOutlet weak var taskNameTextField: UITextField!
+    @IBOutlet weak var taskLocationTextField: UITextField!
+    @IBOutlet weak var showLocationButton: UIButton!
     
     @IBOutlet weak var taskDescriptionTextView: UITextView!
     
@@ -29,7 +31,6 @@ class AddNewTaskToWorkViewController: UIViewController {
     @IBOutlet weak var remindersView: UIView!
     @IBOutlet weak var datePicker: UIDatePicker!
     @IBOutlet weak var reminderStackView: UIStackView!
-    
     @IBOutlet weak var cancelButton: UIBarButtonItem!
     @IBOutlet weak var addToDatabaseButton: UIBarButtonItem!
     
@@ -39,6 +40,18 @@ class AddNewTaskToWorkViewController: UIViewController {
         
         chooseAnImageButton.titleLabel?.lineBreakMode = .byWordWrapping
         remindersView.alpha = 0
+        
+        if currentTask?.taskLocation == nil {
+            showLocationButton.alpha = 0
+        } else {
+            showLocationButton.titleLabel?.sizeToFit()
+            showLocationButton.titleLabel?.textColor = .white
+            showLocationButton.backgroundColor = .blue
+            showLocationButton.layer.cornerRadius = showLocationButton.frame.size.height/7
+            showLocationButton.clipsToBounds = true
+        }
+        
+        
         
         addToDatabaseButton.isEnabled = false
         taskNameTextField.addTarget(self, action: #selector(tfChanged), for: .editingChanged)
@@ -66,31 +79,32 @@ class AddNewTaskToWorkViewController: UIViewController {
         showImageChooserActionSheet()
     }
     
-    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier != "showMap" {
+            return
+        }
+        
+        let mapVC = segue.destination as! MapViewController
+        mapVC.workTask = currentTask
+    }
     
     
     func saveWorkTask() {
         
-        var image: UIImage?
-        
-        if imageIsChanged {
-            image = workTaskImage.image
-        } else {
-            image = #imageLiteral(resourceName: "list")
-        }
-        
+        let image = imageIsChanged ? workTaskImage.image : #imageLiteral(resourceName: "list")
         let imageData = image?.pngData()
         
         
-        let newWorkTask = WorkTask(name: taskNameTextField.text ?? "", taskDescription: taskDescriptionTextView.text, taskDate: datePicker.date, imageData: imageData)
+        let newWorkTask = WorkTask(name: taskNameTextField.text ?? "", taskDescription: taskDescriptionTextView.text, taskDate: datePicker.date, imageData: imageData, taskLocation: taskLocationTextField.text ?? "")
         
         //если мы редактируем уже сохраненную запись
         if currentTask != nil {
             try! realm.write {
                 currentTask?.name = newWorkTask.name
-                currentTask?.taskDescription = newWorkTask.description
+                currentTask?.taskDescription = newWorkTask.taskDescription
                 currentTask?.taskDate = newWorkTask.taskDate
                 currentTask?.imageData = newWorkTask.imageData
+                currentTask?.taskLocation = newWorkTask.taskLocation
             }
         } else {
             //если мы сохраняем новую запись
@@ -111,9 +125,12 @@ class AddNewTaskToWorkViewController: UIViewController {
             guard let data = currentTask?.imageData, let image = UIImage(data: data) else { return }
             
             workTaskImage.image = image
+            chooseAnImageButton.backgroundColor = .clear
+            chooseAnImageButton.setTitleColor(.clear, for: .normal)
             workTaskImage.contentMode = .scaleAspectFill
             taskNameTextField.text = currentTask?.name
             taskDescriptionTextView.text = currentTask?.taskDescription
+            taskLocationTextField.text = currentTask?.taskLocation ?? ""
             datePicker.date = currentTask?.taskDate as! Date
         }
     }

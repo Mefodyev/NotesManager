@@ -12,6 +12,7 @@ class WorkTableViewCell: UITableViewCell {
 
     @IBOutlet weak var taskNameLabel: UILabel!
     @IBOutlet weak var startDateLabel: UILabel!
+    @IBOutlet weak var taskLocationLabel: UILabel!
     @IBOutlet weak var workTaskImage: UIImageView!
 
     

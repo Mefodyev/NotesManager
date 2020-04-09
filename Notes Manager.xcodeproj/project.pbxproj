@@ -18,6 +18,7 @@
 		3644E1CE23DB5C070036CA91 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3644E1CC23DB5C070036CA91 /* Main.storyboard */; };
 		3644E1D323DB5C0E0036CA91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3644E1D223DB5C0E0036CA91 /* Assets.xcassets */; };
 		3644E1D623DB5C0E0036CA91 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3644E1D423DB5C0E0036CA91 /* LaunchScreen.storyboard */; };
+		364C1917243F7F6D003C7832 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 364C1916243F7F6C003C7832 /* MapViewController.swift */; };
 		364CBDAF23DEE176008A4D46 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 364CBDAE23DEE176008A4D46 /* CollectionViewCell.swift */; };
 		36E7E0E623DC2D5A00F5EA90 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E7E0E523DC2D5A00F5EA90 /* CollectionViewController.swift */; };
 		36E7E0E823DC300200F5EA90 /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E7E0E723DC300200F5EA90 /* CollectionViewHeader.swift */; };
@@ -42,6 +43,7 @@
 		3644E1D223DB5C0E0036CA91 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3644E1D523DB5C0E0036CA91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3644E1D723DB5C0E0036CA91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		364C1916243F7F6C003C7832 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		364CBDAE23DEE176008A4D46 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		36E7E0E523DC2D5A00F5EA90 /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		36E7E0E723DC300200F5EA90 /* CollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 				36F7E84B23E1855D00510841 /* WorkTableViewController.swift */,
 				361F257A23FE718100BDA6BB /* WorkTableViewCell.swift */,
 				36086E3B23E1CC5000CBF659 /* AddNewTaskToWorkViewController.swift */,
+				364C1916243F7F6C003C7832 /* MapViewController.swift */,
 				361F257823F9F74700BDA6BB /* StorageManager.swift */,
 				361F257623F9F5AF00BDA6BB /* TasksModel.swift */,
 			);
@@ -255,6 +258,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				364C1917243F7F6D003C7832 /* MapViewController.swift in Sources */,
 				36F7E84C23E1855D00510841 /* WorkTableViewController.swift in Sources */,
 				361F257923F9F74700BDA6BB /* StorageManager.swift in Sources */,
 				36086E3C23E1CC5000CBF659 /* AddNewTaskToWorkViewController.swift in Sources */,
