@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		36009C63244AE30E001B5EE2 /* TableViewFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36009C62244AE30E001B5EE2 /* TableViewFooter.swift */; };
 		36086E3C23E1CC5000CBF659 /* AddNewTaskToWorkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36086E3B23E1CC5000CBF659 /* AddNewTaskToWorkViewController.swift */; };
 		361F256F23F9D73C00BDA6BB /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 361F256E23F9D73C00BDA6BB /* Realm.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		361F257123F9D74000BDA6BB /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 361F257023F9D74000BDA6BB /* RealmSwift.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -20,6 +21,7 @@
 		3644E1D623DB5C0E0036CA91 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3644E1D423DB5C0E0036CA91 /* LaunchScreen.storyboard */; };
 		364C1917243F7F6D003C7832 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 364C1916243F7F6C003C7832 /* MapViewController.swift */; };
 		364CBDAF23DEE176008A4D46 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 364CBDAE23DEE176008A4D46 /* CollectionViewCell.swift */; };
+		3652F0CA244470A1005B370E /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3652F0C9244470A1005B370E /* Notifications.swift */; };
 		36E7E0E623DC2D5A00F5EA90 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E7E0E523DC2D5A00F5EA90 /* CollectionViewController.swift */; };
 		36E7E0E823DC300200F5EA90 /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E7E0E723DC300200F5EA90 /* CollectionViewHeader.swift */; };
 		36F7E84C23E1855D00510841 /* WorkTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36F7E84B23E1855D00510841 /* WorkTableViewController.swift */; };
@@ -28,6 +30,7 @@
 
 /* Begin PBXFileReference section */
 		23AE6B227777A50C5C34C13F /* Pods-Notes Manager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Notes Manager.release.xcconfig"; path = "Target Support Files/Pods-Notes Manager/Pods-Notes Manager.release.xcconfig"; sourceTree = "<group>"; };
+		36009C62244AE30E001B5EE2 /* TableViewFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewFooter.swift; sourceTree = "<group>"; };
 		36086E3B23E1CC5000CBF659 /* AddNewTaskToWorkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTaskToWorkViewController.swift; sourceTree = "<group>"; };
 		361F256423F9D52700BDA6BB /* Realm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Realm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		361F256823F9D52B00BDA6BB /* RealmSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,6 +48,7 @@
 		3644E1D723DB5C0E0036CA91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		364C1916243F7F6C003C7832 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		364CBDAE23DEE176008A4D46 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		3652F0C9244470A1005B370E /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		36E7E0E523DC2D5A00F5EA90 /* CollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		36E7E0E723DC300200F5EA90 /* CollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
 		36F7E84B23E1855D00510841 /* WorkTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkTableViewController.swift; sourceTree = "<group>"; };
@@ -71,6 +75,7 @@
 			children = (
 				36F7E84B23E1855D00510841 /* WorkTableViewController.swift */,
 				361F257A23FE718100BDA6BB /* WorkTableViewCell.swift */,
+				36009C62244AE30E001B5EE2 /* TableViewFooter.swift */,
 				36086E3B23E1CC5000CBF659 /* AddNewTaskToWorkViewController.swift */,
 				364C1916243F7F6C003C7832 /* MapViewController.swift */,
 				361F257823F9F74700BDA6BB /* StorageManager.swift */,
@@ -102,6 +107,7 @@
 			children = (
 				3644E1C623DB5C070036CA91 /* AppDelegate.swift */,
 				3644E1C823DB5C070036CA91 /* SceneDelegate.swift */,
+				3652F0C9244470A1005B370E /* Notifications.swift */,
 				3644E1DF23DB5EA20036CA91 /* Starting Screen */,
 				3644E1D223DB5C0E0036CA91 /* Assets.xcassets */,
 				3644E1D423DB5C0E0036CA91 /* LaunchScreen.storyboard */,
@@ -258,6 +264,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3652F0CA244470A1005B370E /* Notifications.swift in Sources */,
 				364C1917243F7F6D003C7832 /* MapViewController.swift in Sources */,
 				36F7E84C23E1855D00510841 /* WorkTableViewController.swift in Sources */,
 				361F257923F9F74700BDA6BB /* StorageManager.swift in Sources */,
@@ -266,6 +273,7 @@
 				3644E1C723DB5C070036CA91 /* AppDelegate.swift in Sources */,
 				364CBDAF23DEE176008A4D46 /* CollectionViewCell.swift in Sources */,
 				36E7E0E623DC2D5A00F5EA90 /* CollectionViewController.swift in Sources */,
+				36009C63244AE30E001B5EE2 /* TableViewFooter.swift in Sources */,
 				36E7E0E823DC300200F5EA90 /* CollectionViewHeader.swift in Sources */,
 				361F257723F9F5AF00BDA6BB /* TasksModel.swift in Sources */,
 				3644E1C923DB5C070036CA91 /* SceneDelegate.swift in Sources */,

@@ -39,7 +39,7 @@ class CollectionViewController: UICollectionViewController, UICollectionViewDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationController?.navigationBar.isHidden = true
+        navigationController?.navigationBar.isHidden = false
     }
     
     /*

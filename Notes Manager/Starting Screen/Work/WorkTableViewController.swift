@@ -8,10 +8,11 @@
 
 import UIKit
 import RealmSwift
+import BTNavigationDropdownMenu
 
 class WorkTableViewController: UITableViewController {
 
-    
+    let notifications = Notifications()
     private var workTasks: Results<WorkTask>!
     private var ascendingSorting = true
     //задавая в рез-татах нил, мы хотим, чтоб рез-тат поиска отображался на том же вью, где и находится изначальный контент
@@ -21,17 +22,18 @@ class WorkTableViewController: UITableViewController {
         guard let text = searchController.searchBar.text else {return false}
         return text.isEmpty
     }
+    
     //переменная для отслеживания активации поискового запроса
     private var isFiltering: Bool {
         return searchController.isActive && !searchBarIsEmpty
     }
-    
+        
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     @IBOutlet weak var reversedSortingButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         navigationController?.navigationBar.isHidden = false
         workTasks = realm.objects(WorkTask.self)
         
@@ -43,6 +45,8 @@ class WorkTableViewController: UITableViewController {
         navigationItem.searchController = searchController
         //чтоб строка поиска уходила при переходе на другой экран
         definesPresentationContext = true
+        
+        dropDownMenu()
     
     }
     
@@ -61,6 +65,7 @@ class WorkTableViewController: UITableViewController {
 
    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "WorkCell", for: indexPath as IndexPath) as! WorkTableViewCell
         
         var tasks = WorkTask()
@@ -73,7 +78,13 @@ class WorkTableViewController: UITableViewController {
         cell.taskNameLabel.text = tasks.name
         let dateString = (tasks.taskDate)?.toString(dateFormat: "dd MMM yyyy HH:mm")
         cell.startDateLabel.text = dateString
-        cell.workTaskImage.image = UIImage(data: tasks.imageData!)
+        
+        let defaultImage = #imageLiteral(resourceName: "pencil")
+        let defaultImagePNG = defaultImage.pngData()
+
+        cell.workTaskImage.image = UIImage(data: (tasks.imageData ?? defaultImagePNG)!)
+            
+            
         cell.taskLocationLabel.text = tasks.taskLocation
         
         cell.workTaskImage.layer.cornerRadius = cell.workTaskImage.frame.size.height/2
@@ -96,6 +107,10 @@ class WorkTableViewController: UITableViewController {
         
         return swipeActions
     }
+    
+
+        
+    
    
     @IBAction func unwindSegue(_ segue: UIStoryboardSegue) {
         
@@ -152,6 +167,27 @@ class WorkTableViewController: UITableViewController {
             newWorkTaskVC.currentTask = workTask
         }
     }
+    
+    func dropDownMenu() {
+        
+        let arrayOfTaskNames = ["Работа","Учёба", "Работа по дому","Список покупок","Добавить свою категорию"]
+        
+        let menuView = BTNavigationDropdownMenu(navigationController: self.navigationController, containerView: self.navigationController!.view, title: BTTitle.title("Задачи 🔽"), items: arrayOfTaskNames)
+        menuView.cellTextLabelFont = UIFont(name: "Helvetica", size: 18)
+        menuView.cellSeparatorColor = .clear
+        menuView.cellSelectionColor = .yellow
+        menuView.arrowTintColor = .yellow
+    
+        self.navigationItem.titleView = menuView
+        
+        menuView.didSelectItemAtIndexHandler = {(indexPath: Int) -> () in
+                    print("Did select item at index: \(indexPath)")
+//                    self.selectedCellLabel.text = arrayOfTaskNames[indexPath]
+        
+        }
+        
+        
+    }
 
 }
 
@@ -175,6 +211,8 @@ extension WorkTableViewController : UISearchResultsUpdating {
     }
     
 }
+
+
 
 
 //<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>

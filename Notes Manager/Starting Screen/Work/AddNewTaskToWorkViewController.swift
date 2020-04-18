@@ -11,8 +11,9 @@ import RealmSwift
 
 class AddNewTaskToWorkViewController: UIViewController {
     
-    var imageIsChanged = true
+    var imageIsSelectedByUser = false
     var currentTask: WorkTask?
+    let notifications = Notifications()
     
     
     @IBOutlet weak var workTaskImage: UIImageView!
@@ -27,6 +28,9 @@ class AddNewTaskToWorkViewController: UIViewController {
     @IBOutlet weak var linkedToTimeLabel: UILabel!
     @IBOutlet weak var linkedToTimeSwitcher: UISwitch!
     
+    @IBOutlet weak var oneHourNotificationSwither: UISwitch!
+    @IBOutlet weak var twoHoursNotificationSwitcher: UISwitch!
+    @IBOutlet weak var oneDayNotificationSwitcher: UISwitch!
     
     @IBOutlet weak var remindersView: UIView!
     @IBOutlet weak var datePicker: UIDatePicker!
@@ -40,22 +44,12 @@ class AddNewTaskToWorkViewController: UIViewController {
         
         chooseAnImageButton.titleLabel?.lineBreakMode = .byWordWrapping
         remindersView.alpha = 0
-        
-        if currentTask?.taskLocation == nil {
-            showLocationButton.alpha = 0
-        } else {
-            showLocationButton.titleLabel?.sizeToFit()
-            showLocationButton.titleLabel?.textColor = .white
-            showLocationButton.backgroundColor = .blue
-            showLocationButton.layer.cornerRadius = showLocationButton.frame.size.height/7
-            showLocationButton.clipsToBounds = true
-        }
-        
-        
-        
+        setupLocationButton()
         addToDatabaseButton.isEnabled = false
         taskNameTextField.addTarget(self, action: #selector(tfChanged), for: .editingChanged)
         setupEditScreen()
+        
+        
         
     }
     
@@ -91,37 +85,80 @@ class AddNewTaskToWorkViewController: UIViewController {
     
     func saveWorkTask() {
         
-        let image = imageIsChanged ? workTaskImage.image : #imageLiteral(resourceName: "list")
+        let image = imageIsSelectedByUser ? workTaskImage.image : #imageLiteral(resourceName: "pencil")
         let imageData = image?.pngData()
         
         
-        let newWorkTask = WorkTask(name: taskNameTextField.text ?? "", taskDescription: taskDescriptionTextView.text, taskDate: datePicker.date, imageData: imageData, taskLocation: taskLocationTextField.text ?? "")
+        let newWorkTask = WorkTask(name: taskNameTextField.text ?? "", taskDescription: taskDescriptionTextView.text, taskDate: datePicker.date, imageData: imageData, taskLocation: taskLocationTextField.text ?? "", oneHourReminder: false, twoHoursReminder: false, oneDayReminder: false)
+        
+        if oneHourNotificationSwither.isOn {
+            newWorkTask.oneHourReminder = true
+        }
+        if twoHoursNotificationSwitcher.isOn {
+            newWorkTask.twoHoursReminder = true
+        }
+        if oneDayNotificationSwitcher.isOn {
+            newWorkTask.oneDayReminder = true
+        }
         
         //если мы редактируем уже сохраненную запись
         if currentTask != nil {
+            
+            
+            
             try! realm.write {
                 currentTask?.name = newWorkTask.name
                 currentTask?.taskDescription = newWorkTask.taskDescription
                 currentTask?.taskDate = newWorkTask.taskDate
                 currentTask?.imageData = newWorkTask.imageData
                 currentTask?.taskLocation = newWorkTask.taskLocation
+                currentTask?.oneHourReminder = newWorkTask.oneHourReminder
+                currentTask?.twoHoursReminder = newWorkTask.twoHoursReminder
+                currentTask?.oneDayReminder = newWorkTask.oneDayReminder
+                
+                if newWorkTask.oneHourReminder == true {
+                    notifications.scheduleHourNotification(notificationType: "Один час", time0fTask: (newWorkTask.taskDate! as Date))
+                    print("Schedule not-n was set for \(String(describing: newWorkTask.taskDate))")
+                }
             }
         } else {
+
             //если мы сохраняем новую запись
             StorageManager.saveWorkObject(newWorkTask)
-            print("WorkTask saved via StorageManager saving function")
-            
+            if newWorkTask.oneHourReminder == true {
+                notifications.scheduleHourNotification(notificationType: "Один час", time0fTask: newWorkTask.taskDate! as Date)
+                
+                print("WorkTask saved via StorageManager saving function")
+                print("Schedule not-n was set for \(String(describing: newWorkTask.taskDate))")
+                
+            }
         }
     }
     
-        
     
+    
+    private func setupLocationButton() {
+        
+        
+        if currentTask?.taskLocation == nil {
+            showLocationButton.alpha = 0
+        } else {
+            showLocationButton.titleLabel?.sizeToFit()
+            showLocationButton.titleLabel?.textColor = .white
+            showLocationButton.backgroundColor = .blue
+            showLocationButton.layer.cornerRadius = showLocationButton.frame.size.height/7
+            showLocationButton.clipsToBounds = true
+        }
+    }
     
     //метод, позволяющий передать в редактируемую ячейку данные, введенные в конкретную задачу ранее
     private func setupEditScreen() {
         if currentTask != nil {
             setupNavigationBar()
-            imageIsChanged = true
+            imageIsSelectedByUser = true
+            linkedToTimeSwitcher.isOn = true
+            remindersView.alpha = 1
+            imageIsSelectedByUser = true
             guard let data = currentTask?.imageData, let image = UIImage(data: data) else { return }
             
             workTaskImage.image = image
@@ -131,7 +168,11 @@ class AddNewTaskToWorkViewController: UIViewController {
             taskNameTextField.text = currentTask?.name
             taskDescriptionTextView.text = currentTask?.taskDescription
             taskLocationTextField.text = currentTask?.taskLocation ?? ""
-            datePicker.date = currentTask?.taskDate as! Date
+            guard let taskDate = currentTask?.taskDate else { return }
+            datePicker.date = taskDate
+            if currentTask?.oneHourReminder == true {
+                oneHourNotificationSwither.isOn = true
+            }
         }
     }
     
@@ -191,7 +232,7 @@ extension AddNewTaskToWorkViewController : UIImagePickerControllerDelegate, UINa
                 chooseAnImageButton.titleLabel?.textColor = .clear
             }
         }
-        
+        imageIsSelectedByUser = true
         dismiss(animated: true, completion: nil)
         
     }
@@ -219,31 +260,3 @@ extension AddNewTaskToWorkViewController : UIImagePickerControllerDelegate, UINa
         return true
     }
 }
-
-
-//Неудавшиеся попытки спрятать киборд
-//добавить во вьюдидлоад
-//func registerForKeyboardNotifications() {
-//    NotificationCenter.default.addObserver(self, selector: #selector(kbWillShow), name: UIWindow.keyboardWillShowNotification, object: nil)
-//    NotificationCenter.default.addObserver(self, selector: #selector(kbWillHide), name: UIWindow.keyboardWillHideNotification, object: nil)
-//}
-//
-//func removeKeyboardNotifications() {
-//    NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillShowNotification, object: nil)
-//    NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillHideNotification, object: nil)
-//}
-//
-//@objc func kbWillShow(_ notification: Notification) {
-//    let userInfo = notification.userInfo
-//    let kbFrameSize = (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
-//    scrollView.contentOffset = CGPoint(x: 0, y: kbFrameSize.height)
-//
-//}
-//
-//@objc func kbWillHide() {
-//    scrollView.contentOffset = CGPoint.zero
-//}
-//
-//deinit {
-//    removeKeyboardNotifications()
-//}
